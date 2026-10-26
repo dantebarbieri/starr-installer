@@ -200,6 +200,8 @@ software transcoding; configure your particular GPU separately.
 - Bazarr's Sonarr/Radarr connections, with Whisper enabled through its API at
   `http://whisperasr:9000`. Uses the live setup's 3-hour request timeout, 60-second
   polling interval and video-name hints; no provider credentials are copied.
+  Its internal hostname is explicitly `bazarr`, avoiding typed-settings errors
+  when Docker generates a numeric-looking container hostname.
 - A Bazarr subtitle language profile (**English by default**), enabled language,
   and defaults for new series/movies where no defaults already exist. Choose
   another two-letter Bazarr language code with `--subtitle-language`, or `none`

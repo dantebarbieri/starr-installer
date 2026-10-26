@@ -128,6 +128,7 @@ class ComposeTests(unittest.TestCase):
             self.assertTrue(services[name]["ports"][0].startswith("127.0.0.1:"))
         self.assertNotIn("ports", services["whisperasr"])
         self.assertNotIn("ports", services["flaresolverr"])
+        self.assertEqual(services["bazarr"]["hostname"], "bazarr")
         self.assertEqual(services["recyclarr"]["image"], "ghcr.io/recyclarr/recyclarr:8.8.0")
         self.assertNotIn("container_name", services["radarr"])
 

@@ -541,7 +541,8 @@ def compose_config(c):
 
     for app, (port, _, _, _) in APPS.items():
         service(app, f"ghcr.io/hotio/{app}:latest", port, media=app != "prowlarr")
-    service("bazarr", "ghcr.io/hotio/bazarr:release", 6767, media=True)
+    # Dynaconf can coerce a generated hex hostname such as 184e52898475 into infinity.
+    service("bazarr", "ghcr.io/hotio/bazarr:release", 6767, media=True)["hostname"] = "bazarr"
     whisper = service("whisperasr", "onerahmet/openai-whisper-asr-webservice:latest")
     whisper["environment"].update(ASR_ENGINE="faster_whisper", ASR_MODEL="small",
                                   ASR_DEVICE="cpu", ASR_QUANTIZATION="int8")
