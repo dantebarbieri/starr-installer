@@ -17,7 +17,7 @@ from unittest.mock import patch
 import urllib.error
 import urllib.request
 
-from test_install import SOURCE, installer, settings
+from test_install import SOURCE, docker_diagnostics, installer, settings
 
 
 def load(name):
@@ -398,6 +398,7 @@ class DockerDownloadTests(unittest.TestCase):
                     self.assertTrue((install_root / ".provisioned").exists())
             finally:
                 if (install_root / "compose.json").exists():
+                    docker_diagnostics(install_root)
                     installer.run(["docker", "compose", "-f", install_root / "compose.json",
                                    "down", "--volumes", "--remove-orphans"])
                 installer.run([*command, "down", "--volumes", "--remove-orphans"])

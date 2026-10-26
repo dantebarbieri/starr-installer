@@ -182,6 +182,8 @@ software transcoding; configure your particular GPU separately.
   ban on Usenet while a better torrent might eventually appear.
 - Prowlarr full-sync application connections, and a FlareSolverr proxy restricted
   to the `flaresolverr` tag. Tag only indexers that actually need it.
+  Initial proxy validation allows 90 seconds for its 60-second browser request
+  plus startup/transport overhead; a real validation failure still stops setup.
 - A public Internet Archive torrent indexer, with the browser User-Agent
   workaround used on the homeserver. Its custom definition is derived from
   Prowlarr's installed definition, not downloaded separately, and persists in

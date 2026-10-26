@@ -779,7 +779,7 @@ class API:
             urllib.request.ProxyHandler({}),
             urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
 
-    def request(self, path, method="GET", data=None, form=False, raw=False):
+    def request(self, path, method="GET", data=None, form=False, raw=False, timeout=30):
         headers = {"Referer": self.base + "/", **self.headers}
         if self.key:
             headers["X-Api-Key"] = self.key
@@ -789,7 +789,7 @@ class API:
             headers["Content-Type"] = "application/x-www-form-urlencoded" if form else "application/json"
         req = urllib.request.Request(self.base + path, data=body, headers=headers, method=method)
         try:
-            with self.opener.open(req, timeout=30) as response:
+            with self.opener.open(req, timeout=timeout) as response:
                 value = response.read().decode()
         except urllib.error.HTTPError as exc:
             # API validation responses can echo secrets; never print the body or query.
@@ -821,7 +821,7 @@ def set_fields(model, values):
     return model
 
 
-def ensure_model(api, endpoint, implementation, name, fields, **values):
+def ensure_model(api, endpoint, implementation, name, fields, *, request_timeout=30, **values):
     existing = next((x for x in api.request(endpoint) if x["name"] == name), None)
     if existing:
         if existing["implementation"] != implementation:
@@ -836,7 +836,7 @@ def ensure_model(api, endpoint, implementation, name, fields, **values):
     model.pop("id", None)
     model.update(name=name, **values)
     set_fields(model, fields)
-    return api.request(endpoint, "POST", model)
+    return api.request(endpoint, "POST", model, timeout=request_timeout)
 
 
 def local_host(c):
@@ -1125,7 +1125,7 @@ def provision(c):
         tag = prowlarr.request("/tag", "POST", {"label": "flaresolverr"})
     ensure_model(prowlarr, "/indexerproxy", "FlareSolverr", "Portable FlareSolverr",
                  {"host": "http://flaresolverr:8191", "requestTimeout": 60},
-                 tags=[tag["id"]])
+                 request_timeout=90, tags=[tag["id"]])
     configure_internet_archive(c, prowlarr)
     configure_bazarr(c)
 

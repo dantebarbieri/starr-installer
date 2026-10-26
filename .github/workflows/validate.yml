@@ -44,6 +44,11 @@ jobs:
     name: Full Docker integration
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: read
+    env:
+      COMPOSE_PARALLEL_LIMIT: "2"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -52,6 +57,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Reclaim space for fresh optional media images
         run: |
           sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/dotnet
@@ -61,7 +71,8 @@ jobs:
           node --version
       - name: Run all tests against disposable local Docker, including optional apps
         run: |
-          sudo env STARR_DOCKER_TESTS=1 STARR_DOCKER_OPTIONAL=1 STARR_REQUIRE_NODE=1 \
+          sudo env DOCKER_CONFIG="$HOME/.docker" COMPOSE_PARALLEL_LIMIT="$COMPOSE_PARALLEL_LIMIT" \
+            STARR_DOCKER_TESTS=1 STARR_DOCKER_OPTIONAL=1 STARR_REQUIRE_NODE=1 \
             STARR_NODE="$(command -v node)" \
             "$(command -v python)" -B -m unittest discover -s scripts/starr/tests -v
       - name: Docker diagnostics

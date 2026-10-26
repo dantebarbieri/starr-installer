@@ -20,6 +20,14 @@ installer = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(installer)
 
 
+def docker_diagnostics(root):
+    if sys.exc_info()[0] is not None:
+        result = subprocess.run(["docker", "compose", "-f", str(Path(root) / "compose.json"),
+                                 "logs", "--no-color", "--tail", "100"], check=False)
+        if result.returncode:
+            print(f"Docker diagnostics exited with status {result.returncode}", file=sys.stderr)
+
+
 def settings(root="/opt/starr-test", content="/srv/starr-test"):
     return {
         "version": 1, "root": str(root), "content": str(content), "uid": 1000, "gid": 1000,
@@ -198,6 +206,24 @@ class ComposeTests(unittest.TestCase):
 
 
 class FileTests(unittest.TestCase):
+    def test_model_validation_timeout_exceeds_proxy_server_budget(self):
+        api = unittest.mock.Mock()
+        api.request.side_effect = [[], [{"implementation": "FlareSolverr", "fields": [
+            {"name": "host"}, {"name": "requestTimeout"}]}], {"id": 1}]
+        installer.ensure_model(api, "/indexerproxy", "FlareSolverr", "Portable FlareSolverr",
+                               {"host": "http://flaresolverr:8191", "requestTimeout": 60},
+                               request_timeout=90, tags=[1])
+        call = api.request.call_args
+        self.assertEqual(call.kwargs["timeout"], 90)
+        self.assertGreater(call.kwargs["timeout"], call.args[2]["fields"][1]["value"] + 5)
+        self.assertNotIn("request_timeout", call.args[2])
+        client = installer.API("http://127.0.0.1")
+        response = unittest.mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b"{}"
+        with patch.object(client.opener, "open", return_value=response) as send:
+            client.request("/indexerproxy", "POST", {}, timeout=90)
+        self.assertEqual(send.call_args.kwargs["timeout"], 90)
+
     def test_access_validation_and_direct_links(self):
         for host in ("http://server", "server:80", "server/path", "0.0.0.0", "999.1.1.1", "bad\nhost"):
             with self.subTest(host=host), self.assertRaises((installer.InstallError, ValueError)):
@@ -753,6 +779,7 @@ class DockerIntegration(unittest.TestCase):
                 self.assertFalse(remaining.stdout.strip())
             finally:
                 if (root / "compose.json").exists():
+                    docker_diagnostics(root)
                     installer.compose(c, "down", "--volumes", "--remove-orphans")
 
     def test_fresh_install_api_provisioning_and_repeat_run(self):
@@ -949,6 +976,7 @@ class DockerIntegration(unittest.TestCase):
                     if line.startswith("[") or "WebUI" in line or line.startswith("Password")])
                 raise
             finally:
+                docker_diagnostics(root)
                 installer.compose(c, "down", "--volumes", "--remove-orphans")
 
 
