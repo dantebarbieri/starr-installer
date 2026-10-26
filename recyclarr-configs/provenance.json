@@ -1,0 +1,14 @@
+{
+  "repository": "dantebarbieri/homeserver",
+  "commit": "0f0a772ccb65ae48be9ff1d870d818b9399c33d3",
+  "recyclarr_version": "8.8.0",
+  "profiles": {
+    "recyclarr-configs/recyclarr.yml": "ef435c8ec81a5753c7951b1ae14811aea70d5b2e6f3c297430463c4bc7f46e20",
+    "recyclarr-configs/settings.yml": "84364dcd70fa26b085105f0ca095177a5631fc568c0f216a1ed408be2f066bd6",
+    "recyclarr-configs/includes/sonarr/quality-profiles.yml": "0aadf8403e5b796c82da517e6d0d1e9eca102e9ffed6db664356c3d4f65211d7",
+    "recyclarr-configs/includes/sonarr/custom-formats.yml": "1a9677b30c6fd215deced617a5dbc534000aa498522a48691ceff87f614d4ac8",
+    "recyclarr-configs/includes/radarr/quality-profiles.yml": "fc5b53effed8927e152b7c872207a4b70ed15767fd84cac867acae77b389e811",
+    "recyclarr-configs/includes/radarr/custom-formats.yml": "1050025dd9021671dd1a9cdad0bea49f7a89c90af6750de9c088cfcdb3135aa0",
+    "recyclarr-configs/custom-formats/english-anime-audio.json": "4ebbb9b8e80d075ec1ea5f6c2149b9f550217d203d18abe5224e4cf816080584"
+  }
+}

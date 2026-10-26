@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/config-schema.json
+
+# Configuration for Recyclarr — syncs TRaSH Guides profiles and custom formats
+# to Sonarr and Radarr instances.
+#
+# Quality profiles and custom formats are in includes/ for maintainability.
+# See: https://recyclarr.dev/wiki/file-structure/
+
+sonarr:
+  series:
+    base_url: !secret sonarr_url
+    api_key: !secret sonarr_apikey
+
+    quality_definition:
+      type: series
+
+    include:
+      - config: sonarr/quality-profiles.yml
+      - config: sonarr/custom-formats.yml
+
+    media_naming:
+      series: plex-tvdb
+      season: default
+      episodes:
+        rename: true
+        standard: default
+        daily: default
+        anime: default
+
+radarr:
+  movie:
+    base_url: !secret radarr_url
+    api_key: !secret radarr_apikey
+
+    quality_definition:
+      type: movie
+
+    include:
+      - config: radarr/quality-profiles.yml
+      - config: radarr/custom-formats.yml
+
+    media_naming:
+      folder: plex-tmdb
+      movie:
+        rename: true
+        standard: plex-anime-tmdb

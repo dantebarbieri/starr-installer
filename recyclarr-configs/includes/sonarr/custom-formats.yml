@@ -1,0 +1,367 @@
+# Sonarr custom formats
+# See: https://recyclarr.dev/wiki/yaml/config-reference/custom-formats/
+#
+# YAML anchors (&name / *name) eliminate repeated assign_scores_to lists.
+# The anchor is defined at first use; subsequent blocks reference it with an alias.
+
+custom_formats:
+  # ==========================================================================
+  # Language — standard (non-anime) profiles only
+  # Anime profiles do NOT use Language CFs because Sonarr's language
+  # detection (LanguageSpecification) is unreliable for anime — it often
+  # misidentifies dual-audio releases as single-language.
+  # Dub profiles require the local English Anime Audio format instead.
+  # ==========================================================================
+  - trash_ids:
+      - ae575f95ab639ba5d15f663bf019e3e8 # Language Not Original
+    assign_scores_to: &standard_profiles
+      - name: SD - 480p
+      - name: SD - 576p
+      - name: HD - 720p
+      - name: HD - 1080p
+      - name: 4K UHD - 2160p
+      - name: At most 480p
+      - name: At most 576p
+      - name: At most 720p
+      - name: At most 1080p
+      - name: At most 2160p
+
+  # ==========================================================================
+  # Anime scoring — assigned to all Anime profiles (including Dub)
+  # ==========================================================================
+  - trash_ids:
+      # Anime CF/Scoring
+      - 949c16fe0a8147f50ba82cc2df9411c9 # Anime BD Tier 01 (Top SeaDex Muxers)
+      - ed7f1e315e000aef424a58517fa48727 # Anime BD Tier 02 (SeaDex Muxers)
+      - 096e406c92baa713da4a72d88030b815 # Anime BD Tier 03 (SeaDex Muxers)
+      - 30feba9da3030c5ed1e0f7d610bcadc4 # Anime BD Tier 04 (SeaDex Muxers)
+      - 545a76b14ddc349b8b185a6344e28b04 # Anime BD Tier 05 (Remuxes)
+      - 25d2afecab632b1582eaf03b63055f72 # Anime BD Tier 06 (FanSubs)
+      - 0329044e3d9137b08502a9f84a7e58db # Anime BD Tier 07 (P2P/Scene)
+      - c81bbfb47fed3d5a3ad027d077f889de # Anime BD Tier 08 (Mini Encodes)
+      - e0014372773c8f0e1bef8824f00c7dc4 # Anime Web Tier 01 (Muxers)
+      - 19180499de5ef2b84b6ec59aae444696 # Anime Web Tier 02 (Top FanSubs)
+      - c27f2ae6a4e82373b0f1da094e2489ad # Anime Web Tier 03 (Official Subs)
+      - 4fd5528a3a8024e6b49f9c67053ea5f3 # Anime Web Tier 04 (Official Subs)
+      - 29c2a13d091144f63307e4a8ce963a39 # Anime Web Tier 05 (FanSubs)
+      - dc262f88d74c651b12e9d90b39f6c753 # Anime Web Tier 06 (FanSubs)
+      - d2d7b8a9d39413da5f44054080e028a3 # v0
+      - 273bd326df95955e1b6c26527d1df89b # v1
+      - 228b8ee9aa0a609463efca874524a6b8 # v2
+      - 0e5833d3af2cc5fa96a0c29cd4477feb # v3
+      - 4fc15eeb8f2f9a749f918217d4234ad8 # v4
+
+      # Anime Streaming Services
+      - 3e0b26604165f463f3e8e192261e7284 # CR
+      - 1284d18e693de8efe0fe7d6b3e0b9170 # FUNi
+      - 44a8ee6403071dd7b8a3a8dd3fe8cb20 # VRV
+      - 89358767a60cc28783cdc3d0be9388a4 # DSNP
+      - d34870697c9db575f17700212167be23 # NF
+      - d660701077794679fd59e8bdf4ce3a29 # AMZN
+      - d54cd2bf1326287275b56bccedb72ee2 # ADN
+      - 7dd31f3dee6d2ef8eeaa156e23c3857e # B-Global
+      - 4c67ff059210182b59cdd41697b8cb08 # Bilibili
+      - 570b03b3145a25011bf073274a407259 # HIDIVE
+      - a370d974bc7b80374de1d9ba7519760b # ABEMA
+
+      # Main Guide Remux Tier Scoring
+      - 9965a052eb87b0d10313b1cea89eb451 # Remux Tier 01
+      - 8a1d0c3d7497e741736761a1da866a2e # Remux Tier 02
+
+      # Main Guide WEB Tier Scoring
+      - e6258996055b9fbab7e9cb2f75819294 # WEB Tier 01
+      - 58790d4e2fdcd9733aa7ae68ba2bb503 # WEB Tier 02
+      - d84935abd3f8556dcd51d4f27e22d0a6 # WEB Tier 03
+    assign_scores_to: &anime_profiles
+      - name: SD - 480p Anime
+      - name: SD - 576p Anime
+      - name: HD - 720p Anime
+      - name: HD - 1080p Anime
+      - name: 4K UHD - 2160p Anime
+      - name: At most 480p Anime
+      - name: At most 576p Anime
+      - name: At most 720p Anime
+      - name: At most 1080p Anime
+      - name: At most 2160p Anime
+      - name: SD - 480p Anime (Dub)
+      - name: SD - 576p Anime (Dub)
+      - name: HD - 720p Anime (Dub)
+      - name: HD - 1080p Anime (Dub)
+      - name: 4K UHD - 2160p Anime (Dub)
+      - name: At most 480p Anime (Dub)
+      - name: At most 576p Anime (Dub)
+      - name: At most 720p Anime (Dub)
+      - name: At most 1080p Anime (Dub)
+      - name: At most 2160p Anime (Dub)
+
+  # Uncensored — score: 0 (adjust as desired)
+  - trash_ids:
+      - 026d5aadd1a6b4e550b134cb6c72b3ca # Uncensored
+    assign_scores_to: &anime_profiles_score0
+      - name: SD - 480p Anime
+        score: 0
+      - name: SD - 576p Anime
+        score: 0
+      - name: HD - 720p Anime
+        score: 0
+      - name: HD - 1080p Anime
+        score: 0
+      - name: 4K UHD - 2160p Anime
+        score: 0
+      - name: At most 480p Anime
+        score: 0
+      - name: At most 576p Anime
+        score: 0
+      - name: At most 720p Anime
+        score: 0
+      - name: At most 1080p Anime
+        score: 0
+      - name: At most 2160p Anime
+        score: 0
+      - name: SD - 480p Anime (Dub)
+        score: 0
+      - name: SD - 576p Anime (Dub)
+        score: 0
+      - name: HD - 720p Anime (Dub)
+        score: 0
+      - name: HD - 1080p Anime (Dub)
+        score: 0
+      - name: 4K UHD - 2160p Anime (Dub)
+        score: 0
+      - name: At most 480p Anime (Dub)
+        score: 0
+      - name: At most 576p Anime (Dub)
+        score: 0
+      - name: At most 720p Anime (Dub)
+        score: 0
+      - name: At most 1080p Anime (Dub)
+        score: 0
+      - name: At most 2160p Anime (Dub)
+        score: 0
+
+  # 10bit — score: 0 (adjust as desired)
+  - trash_ids:
+      - b2550eb333d27b75833e25b8c2557b38 # 10bit
+    assign_scores_to: *anime_profiles_score0
+
+  # Anime Dual Audio — score: 0 (adjust as desired)
+  - trash_ids:
+      - 418f50b10f1907201b6cfdf881f467b7 # Anime Dual Audio
+    assign_scores_to: *anime_profiles_score0
+
+  # ==========================================================================
+  # Language eligibility and hard rejections are separate from quality tiers.
+  # Each CF/profile pair is assigned once: Recyclarr keeps the first score.
+  # ==========================================================================
+
+  # Regular anime retains the guide's dub-only penalty.
+  - trash_ids:
+      - 9c14d194486c4014d422adc64092d794 # Dubs Only
+    assign_scores_to:
+      - name: SD - 480p Anime
+      - name: SD - 576p Anime
+      - name: HD - 720p Anime
+      - name: HD - 1080p Anime
+      - name: 4K UHD - 2160p Anime
+      - name: At most 480p Anime
+      - name: At most 576p Anime
+      - name: At most 720p Anime
+      - name: At most 1080p Anime
+      - name: At most 2160p Anime
+      - name: SD - 480p Anime (Dub)
+        score: 0
+      - name: SD - 576p Anime (Dub)
+        score: 0
+      - name: HD - 720p Anime (Dub)
+        score: 0
+      - name: HD - 1080p Anime (Dub)
+        score: 0
+      - name: 4K UHD - 2160p Anime (Dub)
+        score: 0
+      - name: At most 480p Anime (Dub)
+        score: 0
+      - name: At most 576p Anime (Dub)
+        score: 0
+      - name: At most 720p Anime (Dub)
+        score: 0
+      - name: At most 1080p Anime (Dub)
+        score: 0
+      - name: At most 2160p Anime (Dub)
+        score: 0
+
+  # One English-audio marker is required to reach the Dub minimum of 20000.
+  - trash_ids:
+      - homeserver-english-anime-audio # English Anime Audio
+    assign_scores_to:
+      - name: SD - 480p Anime (Dub)
+        score: 20000
+      - name: SD - 576p Anime (Dub)
+        score: 20000
+      - name: HD - 720p Anime (Dub)
+        score: 20000
+      - name: HD - 1080p Anime (Dub)
+        score: 20000
+      - name: 4K UHD - 2160p Anime (Dub)
+        score: 20000
+      - name: At most 480p Anime (Dub)
+        score: 20000
+      - name: At most 576p Anime (Dub)
+        score: 20000
+      - name: At most 720p Anime (Dub)
+        score: 20000
+      - name: At most 1080p Anime (Dub)
+        score: 20000
+      - name: At most 2160p Anime (Dub)
+        score: 20000
+
+  - trash_ids:
+      - e3515e519f3b1360cbfc17651944354c # Anime LQ Groups
+      - b4a1b3d705159cdca36d71e57ca86871 # Anime Raws
+      - 07a32f77690263bb9fda1842db7e273f # VOSTFR
+      - 15a05bc7c1a36e2b57fd628f8977e2fc # AV1
+      - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
+      - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
+      - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
+      - fbcb31d8dabd2a319072b84fc0b7249c # Extras
+    assign_scores_to:
+      - name: SD - 480p Anime
+      - name: SD - 576p Anime
+      - name: HD - 720p Anime
+      - name: HD - 1080p Anime
+      - name: 4K UHD - 2160p Anime
+      - name: At most 480p Anime
+      - name: At most 576p Anime
+      - name: At most 720p Anime
+      - name: At most 1080p Anime
+      - name: At most 2160p Anime
+      - name: SD - 480p Anime (Dub)
+        score: -100000
+      - name: SD - 576p Anime (Dub)
+        score: -100000
+      - name: HD - 720p Anime (Dub)
+        score: -100000
+      - name: HD - 1080p Anime (Dub)
+        score: -100000
+      - name: 4K UHD - 2160p Anime (Dub)
+        score: -100000
+      - name: At most 480p Anime (Dub)
+        score: -100000
+      - name: At most 576p Anime (Dub)
+        score: -100000
+      - name: At most 720p Anime (Dub)
+        score: -100000
+      - name: At most 1080p Anime (Dub)
+        score: -100000
+      - name: At most 2160p Anime (Dub)
+        score: -100000
+
+  # ==========================================================================
+  # Non-4K profiles — Unwanted, Misc, Streaming, HQ Source Groups
+  # ==========================================================================
+  - trash_ids:
+      # Unwanted
+      - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
+      - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
+      - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
+      - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
+      - fbcb31d8dabd2a319072b84fc0b7249c # Extras
+      - 15a05bc7c1a36e2b57fd628f8977e2fc # AV1
+
+      # Misc
+      - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
+      - eb3d5cc0a2be0db205fb823640db6a3c # Repack v2
+      - 44e7c4de10ae50265753082e5dc76047 # Repack v3
+
+      # Streaming Services
+      - d660701077794679fd59e8bdf4ce3a29 # AMZN
+      - f67c9ca88f463a48346062e8ad07713f # ATVP
+      - 77a7b25585c18af08f60b1547bb9b4fb # CC
+      - 36b72f59f4ea20aad9316f475f2d9fbb # DCU
+      - 89358767a60cc28783cdc3d0be9388a4 # DSNP
+      - 7a235133c87f7da4c8cccceca7e3c7a6 # HBO
+      - a880d6abc21e7c16884f3ae393f84179 # HMAX
+      - f6cce30f1733d5c8194222a7507909bb # Hulu
+      - 0ac24a2a68a9700bcb7eeca8e5cd644c # iT
+      - 81d1fbf600e2540cee87f3a23f9d3c1c # MAX
+      - d34870697c9db575f17700212167be23 # NF
+      - 1656adc6d7bb2c8cca6acfb6592db421 # PCOK
+      - c67a75ae4a1715f2bb4d492755ba4195 # PMTP
+      - ae58039e1319178e6be73caab5c42166 # SHO
+      - 1efe8da11bfd74fbbcd4d8117ddb9213 # STAN
+
+      # HQ Source Groups
+      - e6258996055b9fbab7e9cb2f75819294 # WEB Tier 01
+      - 58790d4e2fdcd9733aa7ae68ba2bb503 # WEB Tier 02
+      - d84935abd3f8556dcd51d4f27e22d0a6 # WEB Tier 03
+      - d0c516558625b04b363fa6c5c2c7cfd4 # WEB Scene
+
+      # Optional
+      # - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
+      # - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
+      # - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated
+      # - 06d66ab109d4d2eddb2794d21526d140 # Retags
+      # - 1b3994c551cbb92a2c781af061f4ab44 # Scene
+    assign_scores_to: &non4k_profiles
+      - name: SD - 480p
+      - name: SD - 576p
+      - name: HD - 720p
+      - name: HD - 1080p
+      - name: At most 480p
+      - name: At most 576p
+      - name: At most 720p
+      - name: At most 1080p
+
+  # ==========================================================================
+  # 4K UHD profiles — HDR, Unwanted, Misc, Streaming, HQ Source Groups
+  # ==========================================================================
+  - trash_ids:
+      # HDR Formats
+      - 505d871304820ba7106b693be6fe4a9e # HDR
+      - 7c3a61a9c6cb04f52f1544be6d44a026 # DV Boost
+      - 0c4b99df9206d2cfac3c05ab897dd62a # HDR10Plus Boost
+
+      # Unwanted
+      - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
+      - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
+      - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
+      - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
+      - fbcb31d8dabd2a319072b84fc0b7249c # Extras
+      - 15a05bc7c1a36e2b57fd628f8977e2fc # AV1
+
+      # Misc
+      - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
+      - eb3d5cc0a2be0db205fb823640db6a3c # Repack v2
+      - 44e7c4de10ae50265753082e5dc76047 # Repack v3
+
+      # Streaming Services
+      - d660701077794679fd59e8bdf4ce3a29 # AMZN
+      - f67c9ca88f463a48346062e8ad07713f # ATVP
+      - 77a7b25585c18af08f60b1547bb9b4fb # CC
+      - 36b72f59f4ea20aad9316f475f2d9fbb # DCU
+      - 89358767a60cc28783cdc3d0be9388a4 # DSNP
+      - 7a235133c87f7da4c8cccceca7e3c7a6 # HBO
+      - a880d6abc21e7c16884f3ae393f84179 # HMAX
+      - f6cce30f1733d5c8194222a7507909bb # Hulu
+      - 0ac24a2a68a9700bcb7eeca8e5cd644c # iT
+      - 81d1fbf600e2540cee87f3a23f9d3c1c # MAX
+      - d34870697c9db575f17700212167be23 # NF
+      - 1656adc6d7bb2c8cca6acfb6592db421 # PCOK
+      - c67a75ae4a1715f2bb4d492755ba4195 # PMTP
+      - ae58039e1319178e6be73caab5c42166 # SHO
+      - 1efe8da11bfd74fbbcd4d8117ddb9213 # STAN
+      - 43b3cf48cb385cd3eac608ee6bca7f09 # UHD Streaming Boost
+
+      # HQ Source Groups
+      - e6258996055b9fbab7e9cb2f75819294 # WEB Tier 01
+      - 58790d4e2fdcd9733aa7ae68ba2bb503 # WEB Tier 02
+      - d84935abd3f8556dcd51d4f27e22d0a6 # WEB Tier 03
+      - d0c516558625b04b363fa6c5c2c7cfd4 # WEB Scene
+    assign_scores_to: &uhd_profiles
+      - name: 4K UHD - 2160p
+      - name: At most 2160p
+
+  # DV (w/o HDR fallback) — penalizes WEBDL DV-only releases with no HDR10 fallback track.
+  # Comment out if all of your users' setups are fully DV compatible.
+  - trash_ids:
+      - 9b27ab6498ec0f31a3353992e19434ca # DV (w/o HDR fallback)
+    assign_scores_to: *uhd_profiles

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Configure and install Starr apps on a Linux server using Docker. Includes storage, VPN, and account setup instructions.">
+  <title>Starr setup guide</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#configure">Skip to configuration</a>
+  <header class="site-header wrap">
+    <a class="brand" href="/" aria-label="Starr home"><span class="star" aria-hidden="true"></span>STARR<span class="brand-note">SETUP GUIDE</span></a>
+    <nav aria-label="Main navigation"><a href="#prepare">Prepare</a><a href="#configure">Configure</a><a href="#finish">Finish setup</a><a href="https://github.com/dantebarbieri/starr-installer">Source</a></nav>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <h1 id="hero-title">Starr installer</h1>
+        <p class="intro">Install Starr apps on a Linux server with Docker. Start guided setup in the terminal, or build a custom command below.</p>
+        <div class="quick-start">
+          <h2>Guided setup</h2>
+          <pre aria-label="Guided installation command"><code id="quick-command">curl -fsSL https://starr.danteb.com/i | sudo sh</code></pre>
+          <p class="hint">Type this one-line command on the server. The installer asks about storage, applications, VPN and updates. Settings below do not change this command.</p>
+          <p class="hint">Requires curl, Python 3.10+, Docker Engine and Compose v2. The sh wrapper starts the Python installer. Already root? Omit <code>sudo</code>. <a href="https://github.com/dantebarbieri/starr-installer">Review the source</a> before running downloaded code as root.</p>
+        </div>
+        <a class="button primary" href="#configure">Build a custom command <span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <aside class="stack-card" aria-label="Included applications">
+        <p class="eyebrow">INCLUDED APPLICATIONS</p>
+        <div class="app-row"><strong>Radarr + Sonarr + Lidarr</strong><span>Movies, TV &amp; music</span></div>
+        <div class="app-row"><strong>Prowlarr + FlareSolverr</strong><span>Indexers</span></div>
+        <div class="app-row"><strong>qBittorrent</strong><span>Torrent-first downloads</span></div>
+        <div class="app-row"><strong>Bazarr + Whisper</strong><span>Subtitles &amp; transcription</span></div>
+        <div class="app-row"><strong>Recyclarr</strong><span>Quality profiles</span></div>
+        <p class="quiet">Add Usenet, Soulseek, media servers, or Seerr below.</p>
+      </aside>
+    </section>
+
+    <section id="prepare" class="section" aria-labelledby="prepare-title">
+      <div class="section-heading"><span class="step">01</span><h2 id="prepare-title">Requirements</h2></div>
+      <div class="prep-grid">
+        <article class="card"><h3>System requirements</h3><p>Install Python 3.10+, rootful Docker Engine, and Compose v2. You need sudo access. The installer does not install Docker or change your firewall.</p><a href="https://docs.docker.com/engine/install/">Docker installation guide &rarr;</a></article>
+        <article class="card"><h3>Content storage</h3><p>Mount your disk first. Downloads and libraries share a single <code>/data</code> mount so hardlinks and atomic imports work. Existing media is not reorganized or recursively chowned.</p><a href="https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/">TRaSH storage guide &rarr;</a></article>
+        <article class="card"><h3>Accounts</h3><p>Use your indexer and tracker accounts, plus VPN or Usenet accounts if selected. Complete app account setup after installation.</p><a href="#finish">Account setup instructions &rarr;</a></article>
+      </div>
+      <details class="card">
+        <summary>Configured automatically</summary>
+        <ul>
+          <li>Starr root folders, qBittorrent categories and client connections, hardlinks, and torrent-first download preferences.</li>
+          <li>Prowlarr connections to Radarr, Sonarr and Lidarr, plus a <code>flaresolverr</code> tag and a proxy restricted to that tag. Apply it only to indexers that need FlareSolverr.</li>
+          <li>A public Internet Archive torrent indexer with a browser User-Agent, without FlareSolverr. Archive contains mixed-rights material; results are not filtered by license. Download only public-domain, openly licensed or otherwise authorized content.</li>
+          <li>Bazarr connections to Radarr/Sonarr, the Whisper endpoint and provider, and a subtitle profile if a language is selected below.</li>
+          <li>When profile sync is enabled: all 30 Recyclarr profiles per video app, custom formats, naming and size limits, followed by daily syncs.</li>
+          <li>Lidarr's FLAC-only profile and album/track naming, with audio-tag rewriting disabled to protect seeding hardlinks.</li>
+          <li>Jellyfin's initial administrator and movie, TV and music libraries. Plex libraries after the owner's account claim.</li>
+          <li>Starr Connect entries to refresh configured Plex/Jellyfin libraries after imports, upgrades and renames.</li>
+          <li>Seerr's Starr connections, root folders, request profiles and media libraries. Plex is the default when both media servers are selected. Missing account credentials are reported as deferred.</li>
+          <li>SABnzbd's provider and Starr clients when credentials are supplied and NNTP/client tests pass; otherwise the clients remain disabled.</li>
+        </ul>
+        <p>Starr administrator accounts, indexer credentials and account-bound Plex/Usenet/Soulseek credentials still require your input. No account credentials are copied from the homeserver.</p>
+      </details>
+    </section>
+
+    <section id="configure" class="section" aria-labelledby="configure-title">
+      <div class="section-heading"><span class="step">02</span><h2 id="configure-title">Installation settings</h2></div>
+      <p class="privacy-note">Settings are not uploaded, saved, or added to the URL. Enter paths to files on the Linux server, not passwords, API keys, or VPN profile contents.</p>
+      <noscript><p class="notice">JavaScript is required only for the command builder. The guides and downloads still work. Run <code>python3 starr-install.py --help</code> after downloading the Python entry point.</p></noscript>
+      <div class="builder">
+        <form id="settings" autocomplete="off">
+          <fieldset class="card">
+            <legend>Storage &amp; users</legend>
+            <div class="fields">
+              <label>Installation directory<input name="root" value="/opt/starr" required spellcheck="false"><small>Dedicated config directory; kept separate from content.</small></label>
+              <label>Content directory<input name="content" value="/srv/media" required spellcheck="false"><small>Already mounted, with room for downloads and libraries.</small></label>
+              <label>Media user ID (UID)<input name="uid" type="number" min="1" max="4294967294" value="1000" required></label>
+              <label>Media group ID (GID)<input name="gid" type="number" min="0" max="4294967294" value="1000" required></label>
+              <label>Container timezone<select name="timezone" aria-describedby="timezone-help"><option value="automatic">Automatic (browser timezone)</option><option value="Etc/UTC">UTC</option><option value="custom">Enter an IANA timezone...</option></select><small id="timezone-help">Automatic uses this browser's timezone, not the server's. The command includes the detected timezone explicitly.</small></label>
+              <label id="custom-timezone" hidden>IANA timezone<input name="customTimezone" spellcheck="false" placeholder="America/Chicago"><small>Use a timezone name, not a fixed UTC offset, to handle daylight saving time.</small></label>
+              <label>Local app username<input name="username" value="media" required spellcheck="false"><small>Used for downloader logins and a fresh Jellyfin administrator. Password generated on the server.</small></label>
+            </div>
+            <p class="hint">Run <code>id your-media-user</code> on the server to find its UID/GID. Root is not a valid media user.</p>
+          </fieldset>
+          <fieldset class="card">
+            <legend>Optional applications</legend>
+            <div class="choices">
+              <label class="check"><input type="checkbox" name="sabnzbd"><span><strong>SABnzbd</strong><small>Usenet fallback. With provider credentials, tests NNTP and enables its Starr clients; otherwise deferred.</small></span></label>
+              <label class="check"><input type="checkbox" name="soulseek"><span><strong>Soulseek + Soularr</strong><small>Music downloads via slskd. Stays stopped until you supply a Soulseek account.</small></span></label>
+              <label class="check"><input type="checkbox" name="plex"><span><strong>Plex</strong><small>Creates movie, TV and music libraries after the owner claims the server.</small></span></label>
+              <label class="check"><input type="checkbox" name="jellyfin"><span><strong>Jellyfin</strong><small>Creates a local administrator and movie, TV and music libraries. Software transcoding.</small></span></label>
+              <label class="check"><input type="checkbox" name="seerr"><span><strong>Seerr</strong><small>Configures Starr connections, quality profiles and media libraries. Requires a selected media server.</small></span></label>
+            </div>
+          </fieldset>
+          <fieldset class="card" id="media-settings" hidden>
+            <legend>Media server &amp; requests</legend>
+            <label id="seerr-settings" hidden>Seerr media server<select name="seerrMediaServer"><option value="automatic">Automatic (Plex when both are selected)</option><option value="plex">Plex</option><option value="jellyfin">Jellyfin</option></select></label>
+            <label id="request-profile-settings" hidden>Seerr quality profile<select name="requestProfile"><option value="">HD 1080p (automatic)</option></select><small>Uses the matching Anime profile for Sonarr when available. Does not create a separate 4K instance.</small></label>
+            <label id="plex-claim-settings" hidden>Plex claim-token file (optional)<input name="plexClaimFile" placeholder="/root/secrets/plex-claim" spellcheck="false"><small>One fresh token from <a href="https://plex.tv/claim">plex.tv/claim</a>. Tokens expire in about four minutes; if image downloads take longer, refresh the file and rerun. Without it, claim Plex in its UI and rerun to finish libraries and Seerr.</small></label>
+            <p class="hint">Fresh Jellyfin uses the generated username/password in root-only <code>state.json</code>. Existing completed setups and later UI changes are preserved. Plex sign-in is required even when Seerr's Starr connections are preconfigured.</p>
+          </fieldset>
+          <fieldset class="card" id="usenet-settings" hidden>
+            <legend>Usenet provider</legend>
+            <label>Provider JSON file (optional)<input name="usenetServerFile" placeholder="/root/secrets/usenet.json" spellcheck="false"><small>Private server-side file; do not enter credentials into this website.</small></label>
+            <p class="hint">JSON fields: <code>host</code>, <code>username</code>, <code>password</code>; optional <code>port</code> (563), <code>ssl</code> (true), <code>connections</code> (20). Use <code>chmod 600</code>. The installer tests the provided and saved NNTP settings before enabling SABnzbd in Starr. Without credentials, its clients stay disabled.</p>
+          </fieldset>
+          <fieldset class="card">
+            <legend>Subtitles</legend>
+            <label>Subtitle language<select name="subtitleLanguage"><option value="en">English</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="nl">Dutch</option><option value="ja">Japanese</option><option value="ko">Korean</option><option value="zh">Chinese</option><option value="none">Choose language/profile later</option><option value="custom">Other Bazarr language code...</option></select></label>
+            <label id="custom-subtitle-language" hidden>Bazarr language code<input name="customSubtitleLanguage" maxlength="2" spellcheck="false" placeholder="sv"><small>Two-letter code supported by Bazarr.</small></label>
+            <p class="hint">Creates a language profile and makes it the default for new series/movies unless defaults already exist. Whisper is enabled automatically; CPU transcription can be slow. Language and provider preferences can be changed later in Bazarr.</p>
+          </fieldset>
+          <fieldset class="card" id="torrent-vpn"><legend>Torrent VPN</legend><div data-vpn="vpn"></div></fieldset>
+          <fieldset class="card" id="soulseek-settings" hidden>
+            <legend>Soulseek account &amp; separate VPN</legend>
+            <p class="hint">Use a second tunnel/profile with a distinct WireGuard key. One forwarded port cannot serve both downloaders.</p>
+            <div class="fields">
+              <label>Network username (optional)<input name="soulseekUsername" spellcheck="false"><small>Leave blank to keep Soulseek and Soularr stopped.</small></label>
+              <label>Password file (optional)<input name="soulseekPasswordFile" placeholder="/root/secrets/soulseek-password" spellcheck="false"><small>One password line in a private server-side file; never enter the password here.</small></label>
+            </div>
+            <div data-vpn="soulseek-vpn"></div>
+          </fieldset>
+          <fieldset class="card">
+            <legend>Access &amp; maintenance</legend>
+            <label>Web UI bind IPv4<input name="bind" value="127.0.0.1" required spellcheck="false"></label>
+            <p class="notice">Keep loopback during onboarding and use an SSH tunnel. A LAN bind is not authentication. Never forward these web ports to the internet; Docker publishing can bypass UFW.</p>
+            <label>Server hostname or IPv4 for links (optional)<input name="accessHost" placeholder="192.168.1.100 or server.local" spellcheck="false"><small>Blank uses the bind address, except 0.0.0.0. This only sets link destinations; it does not make a loopback bind LAN-accessible or create DNS records.</small></label>
+            <label class="check"><input type="checkbox" name="proxy"><span><strong>Local Caddy proxy</strong><small>Optional app hostnames and an icon landing page, with direct links retained. HTTP only; no DNS, TLS, authentication or firewall setup.</small></span></label>
+            <div id="proxy-settings" hidden>
+              <div class="fields">
+                <label>Local proxy domain<input name="proxyDomain" value="starr.home.arpa" spellcheck="false"><small>For example, radarr.starr.home.arpa. Requires local DNS or client hosts-file entries.</small></label>
+                <label>Proxy HTTP port<input name="proxyPort" type="number" min="1" max="65535" value="80"><small>Must be free. Use 8088 if forwarding an unprivileged local port over SSH.</small></label>
+              </div>
+              <p class="hint">The proxy uses the same bind address as the apps. It does not publish anything on port 443 or request certificates. Finish app authentication before allowing LAN access.</p>
+            </div>
+            <label class="check"><input type="checkbox" name="syncProfiles" checked><span><strong>Apply Recyclarr profiles</strong><small>Initial sync, then daily. Applies naming, sizes, custom formats and 30 simplified profiles per video app, including Anime and Dub variants. Not an unchanged official TRaSH preset.</small></span></label>
+            <label class="check"><input type="checkbox" name="autoUpdate"><span><strong>Daily Docker image updates</strong><small>04:00 in the host's local timezone. Install and enable cron/crond first. Brief downtime is possible; keep backups. This does not update installer code or overwrite saved profile files.</small></span></label>
+          </fieldset>
+          <fieldset class="card">
+            <legend>How to run</legend>
+            <div class="fields">
+              <label>Setup mode<select name="setupMode"><option value="guided">Guided: confirm sensitive choices in terminal</option><option value="unattended">Unattended: use these settings and defaults</option></select></label>
+              <label>Entry point<select name="interpreter"><option value="python">Python 3 (recommended)</option><option value="sh">sh (Python wrapper)</option><option value="bash">Bash (Python wrapper)</option></select></label>
+              <label>Download style<select name="delivery"><option value="download">Download to a file, then run (recommended)</option><option value="pipe">Pipe directly to interpreter</option></select></label>
+            </div>
+            <p class="hint">All entry points require Python 3.10+. The shell wrappers check for Python and run it; they do not install it. Both download styles execute immediately. Use the source links to inspect the code first.</p>
+            <p class="hint">Guided mode still asks for direct-traffic consent and any unsupplied credentials. Unattended mode adds <code>--non-interactive --yes</code>; review the full command before running as root.</p>
+            <label class="check notice" id="direct-consent" hidden><input type="checkbox" name="allowDirect"><span><strong>I approve peer traffic without a VPN.</strong><small>At least one selected downloader has no VPN. This exposes its peer traffic to your normal internet connection; --yes alone does not approve that.</small></span></label>
+          </fieldset>
+          <button type="reset" class="button secondary">Reset settings</button>
+          <a class="button secondary" href="#install-command">Review command &darr;</a>
+        </form>
+        <aside id="install-command" class="command-panel" aria-labelledby="command-title">
+          <div class="card command-card">
+            <h3 id="command-title">Install command</h3>
+            <p class="hint">Run on the Linux server after installing Docker and Python.</p>
+            <p id="command-error" class="notice" role="alert" hidden></p>
+            <pre id="command-output" tabindex="0" aria-label="Generated install command"><code id="command">Enable JavaScript to build a command, or download the installer and run --help.</code></pre>
+            <button id="copy-command" class="button primary" type="button" disabled>Copy command</button>
+            <p id="copy-status" class="quiet" role="status" aria-live="polite"></p>
+            <div class="download-links"><a href="/install.py" download="starr-install.py">Python entry point</a><a href="/install.sh" download="starr-install.sh">Shell wrapper</a><a href="https://github.com/dantebarbieri/starr-installer/blob/main/scripts/starr/install.py">Installer source</a></div>
+            <p class="quiet">The wrapper verifies a matching installer/profile bundle before execution. HTTPS is the trust boundary; the checksum is not a signature.</p>
+          </div>
+          <div class="card layout-card"><p class="eyebrow">CONTENT LAYOUT</p><pre><span id="content-preview">/srv/media</span> &rarr; /data
+  media/{movies,tv,music}
+  torrents/{movies,tv,music,incomplete}
+  usenet/{complete,incomplete}
+  soulseek/{downloads,incomplete}</pre><p class="quiet">The installer checks hardlink support.</p></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="finish" class="section" aria-labelledby="finish-title">
+      <div class="section-heading"><span class="step">03</span><h2 id="finish-title">After installation</h2></div>
+      <article id="access-links" class="card" hidden>
+        <h3>Application links</h3>
+        <p>Based on the settings above; these links do not check whether installation is complete. Loopback addresses require SSH forwarding on this computer. A server hostname must already resolve on your network.</p>
+        <ul id="app-links" class="app-links"></ul>
+        <details id="local-dns" hidden>
+          <summary>Local proxy names and DNS</summary>
+          <p>Landing page: <a id="dashboard-link" target="_blank" rel="noopener noreferrer"></a>. It includes these app icons and direct fallback links.</p>
+          <p>Map the following names in each client's hosts file, or create equivalent local DNS records. Replace <code>SERVER_LAN_IPV4</code> with the server's LAN address if shown. Use <code>127.0.0.1</code> only on a client forwarding the proxy port over SSH. Hosts files cannot use wildcard names.</p>
+          <pre id="hosts-entry"></pre>
+          <p>Hosts files: <code>/etc/hosts</code> on Linux/macOS; <code>C:\Windows\System32\drivers\etc\hosts</code> on Windows (administrator access required). Caddy does not supply DNS. Router DNS changes may cause a reboot or network outage; make them during a low-usage window.</p>
+          <p>The installer also writes <code>&lt;install-dir&gt;/access/index.html</code> and <code>access/hosts.txt</code>. With proxy port 8088 and the default loopback bind, use <code>ssh -N -L 8088:127.0.0.1:8088 user@server</code> and map the names to 127.0.0.1 on your computer.</p>
+        </details>
+        <p class="quiet">App logos: <a href="/icons/NOTICE">Dashboard Icons attribution</a> &middot; <a href="/icons/LICENSE">license</a>. Icons are served here, not fetched from a third-party CDN.</p>
+      </article>
+      <div class="finish-grid">
+        <article class="card"><h3>SSH access</h3><p>With the default loopback bind, forward the web ports from your computer over SSH. Substitute your server's SSH user/host (and add <code>-p PORT</code> if needed).</p><pre>ssh -N -L 7878:127.0.0.1:7878 \
+  -L 8989:127.0.0.1:8989 \
+  -L 8686:127.0.0.1:8686 \
+  -L 9696:127.0.0.1:9696 \
+  -L 8080:127.0.0.1:8080 \
+  -L 6767:127.0.0.1:6767 user@server</pre><p>Then open, for example, <code>http://127.0.0.1:7878</code> locally. Extra ports: SABnzbd 8085, slskd 5030, Plex 32400, Jellyfin 8096, Seerr 5055.</p></article>
+        <article class="card"><h3>Application setup</h3><ol><li>Create the Starr administrator accounts before exposing any UI.</li><li>Read generated credentials from <code>&lt;install-dir&gt;/state.json</code> with sudo. Keep it private. Fresh Jellyfin uses these for its administrator.</li><li>Internet Archive is preconfigured. Add other authorized indexers in Prowlarr. Test its app connections; apply <code>flaresolverr</code> only where needed, not to Archive.</li><li>Set up Bazarr authentication and any additional subtitle-provider accounts. Check the configured language profile and Whisper connection.</li><li>Complete any explicitly deferred Plex, Usenet or Soulseek account setup and rerun the installer. Seerr's server, profiles and libraries are configured once its media-server authentication succeeds.</li><li>Check Seerr's request profiles, test a lawful import, and check hardlinks. Respect tracker seeding rules.</li></ol></article>
+      </div>
+      <details class="card"><summary>VPN profile preparation &amp; limitations</summary><p><strong>Proton:</strong> export a Linux WireGuard profile for a P2P-capable server. Enable NAT-PMP in the export if your plan supports forwarding. Gluetun chooses a Proton endpoint in your selected country; it is not pinned to the file's endpoint.</p><p><strong>Other WireGuard providers:</strong> supply a standard Interface/Peer export with a literal-IP endpoint. The installer imports keys and addresses, not wg-quick hooks; Gluetun owns DNS/routing.</p><p><strong>OpenVPN:</strong> use a self-contained export with inline certificates/keys and any provider-specific credentials in private files. External certificate paths, plugins and executable hooks are rejected.</p><p>Other providers can use static forwarded ports. Dynamic forwarding is currently Proton-only. VPN routing covers peer downloaders, not indexer/Usenet traffic or the whole server. Check Gluetun health/public-IP logs and its kill switch before adding downloads. TUN must be available in your host or VM.</p><div class="resource-links"><a href="https://account.proton.me/u/0/vpn/WireGuard">Export a Proton profile</a><a href="https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers">Gluetun provider guides</a><a href="https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/vpn-port-forwarding.md">Port-forwarding support</a></div></details>
+      <details class="card"><summary>Reruns, updates &amp; recovery</summary><p>Reruns reuse saved choices and credentials. They do not reset app databases or silently change the app/VPN selection. Enabled Recyclarr sync continues to update the profiles it manages. Use the same installation path. Bind address, link host, local proxy settings, auto-updates and profile sync can be changed with flags; other reconfiguration is manual.</p><p>A failed first install can be rerun. Do not delete state to regenerate credentials for existing apps. Back up configs and databases; RAID is not a backup. Image updates are not automatic rollbacks, and stopping containers does not remove a managed cron updater.</p><p><a href="https://github.com/dantebarbieri/starr-installer/blob/main/scripts/starr/README.md">Full CLI, troubleshooting and recovery guide &rarr;</a></p></details>
+    </section>
+  </main>
+  <footer class="wrap"><span>Starr setup guide</span><a href="https://github.com/dantebarbieri/starr-installer">Source code &rarr;</a></footer>
+
+  <template id="vpn-template">
+    <label>VPN provider / format<select data-field="mode"><option value="none">No VPN (requires explicit direct-traffic consent)</option><option value="proton">Proton VPN / WireGuard</option><option value="wireguard">Other provider / WireGuard</option><option value="openvpn">Other provider / OpenVPN</option></select></label>
+    <div data-visible="profile" hidden>
+      <label>Profile path on the server<input data-field="profile" placeholder="/root/vpn/torrents.conf" spellcheck="false"><small>Export first, copy privately to the server, and chmod 600. Do not upload it here.</small></label>
+      <div data-visible="proton" hidden>
+        <label>Proton server country<input data-field="country" value="Netherlands" spellcheck="false"></label>
+        <label class="check"><input type="checkbox" data-field="forwarding" checked><span><strong>Dynamic NAT-PMP forwarding</strong><small>Requires a suitable plan/export. Other providers use a static port below.</small></span></label>
+      </div>
+      <div data-visible="static" hidden><label>Static forwarded peer port<input data-field="port" type="number" min="0" max="65535" value="0"><small>0 means none. Downloads may work, but peer reachability is reduced.</small></label></div>
+      <div data-visible="openvpn" class="fields" hidden>
+        <label>OpenVPN username (optional)<input data-field="username" spellcheck="false"><small>May differ from the provider's website login.</small></label>
+        <label>OpenVPN password file (optional)<input data-field="passwordFile" placeholder="/root/secrets/openvpn-password" spellcheck="false"><small>One password line, chmod 600. Only the file path belongs here.</small></label>
+      </div>
+    </div>
+    <p class="hint"><a href="#finish">Profile export instructions and provider limitations &darr;</a></p>
+  </template>
+</body>
+</html>
