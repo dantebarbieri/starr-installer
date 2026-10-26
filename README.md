@@ -88,8 +88,11 @@ Required branch-protection candidates (exact GitHub job contexts):
 
 - `Fast tests (Python 3.10)`
 - `Fast tests (Python 3.14)`
+- `Fast tests (Python current)`
 - `Full Docker integration`
 
+The `current` job resolves the latest stable Python using `3.x`; Python 3.14
+remains an explicit compatibility check and the hosting image runtime.
 All branch pushes and pull requests run these checks. Node command-builder
 checks are mandatory. Full integration builds/runs the hosting image with a
 read-only rootfs, then performs disposable installs/reruns against fresh pulled
